@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Install dependencies
+      apt:
+        name: python3-pip
+        state: present
+      become: true
+
+    - name: Install Flask
+      command: python3 -m pip install Flask --break-system-packages
+
+    - name: Create app folder
+      file:
+        path: /tmp/flask-deploy
+        state: directory
+
+    - name: Copy app
+      copy:
+        src: ./app.py
+        dest: /tmp/flask-deploy/app.py
