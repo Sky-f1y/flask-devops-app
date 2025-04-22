@@ -12,3 +12,5 @@ cp app.py /tmp/green/
 ln -sfn /tmp/green /tmp/current
 
 echo "Deployed to /tmp/green and linked to /tmp/current"
+
+
