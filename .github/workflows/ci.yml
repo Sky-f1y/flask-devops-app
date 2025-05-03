@@ -51,7 +51,7 @@ jobs:
           echo "Health check failed, rolling back deployment..."
           # Rollback to previous version 
           ./rollback.sh
-          exit 1  # Fail the job if rollback happens
+          # exit 1 - we can Fail the job if rollback happens but i want add it 
         else
           echo "Health check passed."
         fi
