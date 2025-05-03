@@ -28,13 +28,12 @@ jobs:
     - name: Run tests
       run: pytest
       
-    - name: Make deploy.sh executable
-      run: chmod +x ./deploy.sh
+    - name: Convert line endings (dos2unix)
+      run: sudo apt-get install -y dos2unix && dos2unix deploy.sh
 
-    - name: Run deploy script
+    - name: Deploy the app
       run: ./deploy.sh
 
-        
     - name: Run Health Check
       run: |
         ./health_check.sh
