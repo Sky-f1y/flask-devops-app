@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD with Rollback
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  test-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,3 +27,25 @@ jobs:
 
     - name: Run tests
       run: pytest
+
+    - name: Deploy to server
+      if: success()
+      run: |
+        echo "$SSH_KEY" > key.pem
+        chmod 600 key.pem
+        ssh -o StrictHostKeyChecking=no -i key.pem $SSH_USER@$SSH_HOST 'bash ~/deploy.sh'
+
+    - name: Run health check
+      if: success()
+      run: |
+        echo "$SSH_KEY" > key.pem
+        chmod 600 key.pem
+        STATUS=$(ssh -o StrictHostKeyChecking=no -i key.pem $SSH_USER@$SSH_HOST 'bash ~/health_check.sh && tail -n 1 ~/health.log')
+
+        echo "Health check result: $STATUS"
+
+        if [[ "$STATUS" == *"NOT running"* ]]; then
+          echo "Health check failed. Triggering rollback..."
+          ssh -o StrictHostKeyChecking=no -i key.pem $SSH_USER@$SSH_HOST 'bash ~/rollback.sh'
+          exit 1
+        fi
