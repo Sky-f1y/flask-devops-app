@@ -37,6 +37,9 @@ jobs:
     - name: Deploy the app
       run: ./deploy.sh
 
+    - name: Make health_check.sh executable
+      run: chmod +x health_check.sh
+
     - name: Run Health Check
       run: |
         ./health_check.sh
