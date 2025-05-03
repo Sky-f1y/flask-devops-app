@@ -1,4 +1,4 @@
-name: CI/CD with Rollback
+name: CI
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  test-deploy:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,24 +28,21 @@ jobs:
     - name: Run tests
       run: pytest
 
-    - name: Deploy to server
-      if: success()
+    - name: Deploy app
       run: |
-        echo "$SSH_KEY" > key.pem
-        chmod 600 key.pem
-        ssh -o StrictHostKeyChecking=no -i key.pem $SSH_USER@$SSH_HOST 'bash ~/deploy.sh'
-
-    - name: Run health check
-      if: success()
+        # Deploy the app (this could be your deploy.sh or script)
+        chmod +x deploy.sh
+        ./deploy.sh
+        
+    - name: Run Health Check
       run: |
-        echo "$SSH_KEY" > key.pem
-        chmod 600 key.pem
-        STATUS=$(ssh -o StrictHostKeyChecking=no -i key.pem $SSH_USER@$SSH_HOST 'bash ~/health_check.sh && tail -n 1 ~/health.log')
-
-        echo "Health check result: $STATUS"
-
-        if [[ "$STATUS" == *"NOT running"* ]]; then
-          echo "Health check failed. Triggering rollback..."
-          ssh -o StrictHostKeyChecking=no -i key.pem $SSH_USER@$SSH_HOST 'bash ~/rollback.sh'
-          exit 1
+        ./health_check.sh
+        # Check if health_check.sh returned 200 (success)
+        if grep -q "App is NOT running" health.log; then
+          echo "Health check failed, rolling back deployment..."
+          # Rollback to previous version (adjust based on your rollback strategy)
+          ./rollback.sh
+          exit 1  # Fail the job if rollback happens
+        else
+          echo "Health check passed."
         fi
