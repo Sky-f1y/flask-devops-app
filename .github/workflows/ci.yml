@@ -30,7 +30,7 @@ jobs:
 
     - name: Deploy app
       run: |
-        # Deploy the app (this could be your deploy.sh or script)
+        # Deploy the app 
         chmod +x deploy.sh
         ./deploy.sh
         
