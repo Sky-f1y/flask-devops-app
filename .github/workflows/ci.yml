@@ -40,15 +40,20 @@ jobs:
     - name: Make health_check.sh executable
       run: chmod +x health_check.sh
 
+    - name: Make rollback.sh executable
+      run: chmod +x rollback.sh
+
     - name: Run Health Check
       run: |
         ./health_check.sh
         # Check if health_check.sh returned 200 (success)
         if grep -q "App is NOT running" health.log; then
           echo "Health check failed, rolling back deployment..."
-          # Rollback to previous version (adjust based on your rollback strategy)
+          # Rollback to previous version 
           ./rollback.sh
           exit 1  # Fail the job if rollback happens
         else
           echo "Health check passed."
         fi
+
+    
