@@ -28,8 +28,12 @@ jobs:
     - name: Run tests
       run: pytest
       
+    - name: Make deploy.sh executable
+      run: chmod +x ./deploy.sh
+
     - name: Run deploy script
-      run: ./scripts/deploy.sh  
+      run: ./deploy.sh
+
         
     - name: Run Health Check
       run: |
